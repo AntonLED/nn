@@ -3,38 +3,21 @@ from tensorflow import keras
 import numpy as np 
 
 
-class Nalu(keras.layers.Layer):                
-    def __init__(self,units=32):                  
-        super(Nalu, self).__init__()            
-        self.units = units   
-                             
-    def build(self, input_shape):        
-        init = tf.random_normal_initializer() 
-        W_hat = tf.Variable(name="W_hat",
-                            initial_value=init(shape=(input_shape[-1], self.units), dtype='float32'), 
-                            trainable=True)   
-        M_hat = tf.Variable(name="M_hat",
-                            initial_value=init(shape=(input_shape[-1], self.units), dtype='float32'),
-                            trainable=True)         
-        self.w = tf.nn.tanh(W_hat) * tf.nn.sigmoid(M_hat)
+# x_train = np.loadtxt("./datasets/data/in", dtype=np.float64)
+# print(x_train)
 
-    def call(self,inputs):                        
-        return tf.exp(tf.matmul(tf.math.log(tf.abs(inputs) + 1e-7), self.w))
-    
+# y_train = np.loadtxt("./datasets/data/out")
+# print(y_train)
 
-x_train = np.arange(start=1, stop=1000, step=1, dtype=np.float32)
-y_train = np.sqrt(x_train)
+x_train = np.loadtxt("./datasets/data/in", dtype=np.float64)
+y_train = np.loadtxt("./datasets/data/out", dtype=np.float64)
+x_train_norm = (x_train - np.min(x_train)) / (np.max(x_train) - np.min(x_train))
+y_train_norm = (y_train - np.min(y_train)) / (np.max(y_train) - np.min(y_train))
 
-inputs = keras.Input(1)
-x = Nalu(units=1)(inputs)
-outputs = keras.layers.Dense(1)(x)
+print(x_train_norm[0])
 
-model = keras.Model(inputs=inputs, outputs=outputs)
-
-model.compile(optimizer="adam", loss='mean_squared_error')
-model.fit(x_train, y_train, epochs=1000, verbose=2)
-
-print(model.predict([9.0]))
+print(x_train_norm * (np.max(x_train) - np.min(x_train)) + np.min(x_train) - x_train)
+print(y_train_norm * (np.max(y_train) - np.min(y_train)) + np.min(y_train) - y_train)
 
 
 
