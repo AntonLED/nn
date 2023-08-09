@@ -1,1 +1,6 @@
 /datasets
+/cesar_cipher/__pycache__
+/rsa_cipher/__pycache__
+/nalu_habr_article
+/inalu_arxiv_article
+results.txt

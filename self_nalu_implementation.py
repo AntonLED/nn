@@ -63,26 +63,34 @@ class Nalu_layer(keras.layers.Layer):
 
         
 # data load
-x_train = np.loadtxt("./datasets/data/in", dtype=np.float64)
-y_train = np.loadtxt("./datasets/data/out", dtype=np.float64)
+x_train_unnorm = np.loadtxt("./datasets/data/in", dtype=np.float64)
+y_train_unnorm = np.loadtxt("./datasets/data/out", dtype=np.float64)
 
 # data normalization
-x_train = (x_train - np.min(x_train)) / (np.max(x_train) - np.min(x_train))
-y_train = (y_train - np.min(y_train)) / (np.max(y_train) - np.min(y_train))
+x_train = (x_train_unnorm - np.min(x_train_unnorm)) / (np.max(x_train_unnorm) - np.min(x_train_unnorm))
+y_train = (y_train_unnorm - np.min(y_train_unnorm)) / (np.max(y_train_unnorm) - np.min(y_train_unnorm))
 
 # model building
 model = keras.Sequential([
     keras.layers.Input(1),
     # Nalu_layer(units=32),
     keras.layers.Dense(13, activation="relu"),
+    # Nac_smpl_layer(32),
+    # Nac_cmpx_layer(32),
     keras.layers.Dense(1)
 ])
 
 model.compile(optimizer=keras.optimizers.Adam(learning_rate=0.001), loss=keras.losses.mean_squared_error)
-model.fit(x_train, y_train, epochs=80, verbose=2, shuffle=False)
+model.fit(x_train, y_train, epochs=3, verbose=2)
 
-print(model.predict(x_train))
-print(y_train)
+result = model.predict(x_train)
+
+with open("./results.txt", 'w') as file:
+    for number in result:
+        file.write(str(int(number[0] * (np.max(x_train_unnorm) - np.min(x_train_unnorm)) + np.min(x_train_unnorm))) + "\n")
+
+# print(model.predict(x_train))
+# print(y_train)
 
 
 
